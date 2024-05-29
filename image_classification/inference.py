@@ -110,7 +110,7 @@ if __name__ == "__main__":
 
                 # Get the end date and time for the filename
                 end_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-                new_file_path = os.path.join(directory, f"cnninf_log_{start_time}_to_{end_time}.csv")
+                new_file_path = os.path.join(directory, f"cnninf_log_{args.model}_{start_time}_to_{end_time}.csv")
                 os.rename(file_path, new_file_path)
                 print(f"Log file saved as {new_file_path}")
 
