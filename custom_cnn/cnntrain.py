@@ -89,6 +89,11 @@ if __name__ == "__main__":
                             running_loss = 0.0
                             print(f"Log at {stats['time']}")
 
+                # Save the trained model weights
+                weights_path = os.path.join(directory, f"model_weights_{start_time}.pth")
+                torch.save(model.state_dict(), weights_path)
+                print(f"Model weights saved as {weights_path}")
+
                 # Get the end date and time for the filename
                 end_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
                 new_file_path = os.path.join(directory, f"cnnlog_{start_time}_to_{end_time}.csv")
