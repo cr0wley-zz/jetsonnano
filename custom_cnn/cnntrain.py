@@ -90,7 +90,7 @@ if __name__ == "__main__":
                             print(f"Log at {stats['time']}")
 
                 # Save the trained model weights
-                weights_path = os.path.join(directory, f"model_weights_{start_time}.pth")
+                weights_path = os.path.join(directory, f"model_weights.pth")
                 torch.save(model.state_dict(), weights_path)
                 print(f"Model weights saved as {weights_path}")
 
