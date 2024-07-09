@@ -9,6 +9,9 @@ import argparse
 import datetime
 import os
 from jtop import jtop, JtopException
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
 
 # Check for a GPU
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -22,21 +25,25 @@ transform = transforms.Compose([
 trainset = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True)
 
-# Define a simple neural network
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.fc1 = nn.Linear(28 * 28, 128)
-        self.fc2 = nn.Linear(128, 64)
-        self.fc3 = nn.Linear(64, 10)
+        self.conv1 = nn.Conv2d(in_channels=1, out_channels=32, kernel_size=3, stride=1, padding=1)
+        self.pool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
+        self.conv2 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, stride=1, padding=1)
+        self.fc1 = nn.Linear(in_features=64 * 7 * 7, out_features=1000)
+        self.fc2 = nn.Linear(in_features=1000, out_features=10)
 
     def forward(self, x):
-        x = x.view(-1, 28 * 28)
-        x = torch.relu(self.fc1(x))
-        x = torch.relu(self.fc2(x))
-        x = self.fc3(x)
+        x = F.relu(self.conv1(x))
+        x = self.pool(x)
+        x = F.relu(self.conv2(x))
+        x = self.pool(x)
+        x = torch.flatten(x, 1)  # Flatten all dimensions except batch
+        x = F.relu(self.fc1(x))
+        x = self.fc2(x)
         return x
-
+    
 model = Net().to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
